@@ -25,6 +25,9 @@ class AlienInvasion:
         
         pygame.display.set_caption('Alien Invasion')
 
+        self._music_player()
+        self._load_sounds()
+
         self.stats = GameStats(self)
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
@@ -33,6 +36,22 @@ class AlienInvasion:
         self._create_fleet()
 
         self.game_active = True
+
+    def _load_sounds(self):
+        '''
+            loads and assigns sounds for game.
+        '''
+        self.explosion_sound = pygame.mixer.Sound('audio/ship_laser.wav')
+
+
+    def _music_player(self):
+        '''
+            Handles music for the game
+        '''
+        pygame.mixer.music.load('audio/The Invaders.ogg')
+        pygame.mixer.music.set_volume(self.settings.music_volume)
+        pygame.mixer.music.play(loops=-1,fade_ms=self.settings.music_fading)
+
 
     def run_game(self):
         '''
@@ -86,6 +105,7 @@ class AlienInvasion:
 
         for alien in self.aliens.sprites():
             if alien.rect.bottom >= self.settings.screen_height:
+                print('ship hit')
                 #Treat the same as if ship got hit.
                 self._ship_hit()
                 break
@@ -94,6 +114,9 @@ class AlienInvasion:
         '''
             Respond to the ship being hit by an alien.
         '''
+        
+        self.explosion_sound.play()
+
         if self.stats.ships_left > 0:
             #Decrement ships_list.
             self.stats.ships_left -= 1
@@ -139,17 +162,29 @@ class AlienInvasion:
         #Spacing between aliens is one alien width
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
+        
+        x_settings = [[5,8],[3,10],[2,11],[2,11],[2,11],[3,10],[5,8]]
 
         current_x = alien_width
         current_y = alien_height
-        while current_y < (self.settings.screen_height - 3 * alien_height):
-            while current_x < (self.settings.screen_width - 2 * alien_width):
-                self._create_alien(current_x, current_y)
-                current_x += 2 * alien_width
+        x_counter = 0
 
-            #finished a row; reset x value, and incrment y value.
-            current_x = alien_width
-            current_y += 2 * alien_height
+        while current_y < (self.settings.screen_height - 8 * alien_height):
+
+            for x in x_settings:
+
+                while current_x < (self.settings.screen_width - 2 * alien_width):
+
+                    if x_counter >= x[0] and x_counter <= x[1]:
+                        self._create_alien(current_x, current_y)
+
+                    current_x += 2 * alien_width
+                    x_counter += 1
+
+                #finished a row; reset x value, and incrment y value.
+                current_x = alien_width
+                current_y += 2 * alien_height
+                x_counter = 0
 
     def _create_alien(self,x_position,y_position):
         '''
@@ -201,6 +236,9 @@ class AlienInvasion:
         # if so, get rid of the bullet and the alien
         collisions = pygame.sprite.groupcollide(                  
                         self.bullets, self.aliens, True, True)
+        
+        if collisions:
+            self.explosion_sound.play()
         
         if not self.aliens:
             #Destroy existing bullets and create new fleet

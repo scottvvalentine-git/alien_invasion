@@ -11,11 +11,11 @@ class Settings:
         self.screen_width = 1200
         self.screen_height = 800
         self.bg_color = (230, 230, 230)
-        self.refresh_rate = 120
+        self.refresh_rate = 60
 
 
         #ship settings
-        self.ship_speed = 1.5
+        self.ship_speed = 2
         self.ship_limit = 3
 
         #Bullet settings
@@ -26,9 +26,12 @@ class Settings:
         self.bullets_allowed = 5
 
         #Alien settings
-        self.alien_speed = 1.0
-        self.fleet_drop_speed = 10
+        self.alien_speed = 2.0
+        self.fleet_drop_speed = 5
         #fleet_direction of 1 represents right; -1 represents left.
         self.fleet_direction = 1
 
+        #audio
+        self.music_fading = 1000
+        self.music_volume = .45
 
