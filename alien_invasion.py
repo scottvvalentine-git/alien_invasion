@@ -137,8 +137,6 @@ class AlienInvasion:
         '''
             Drop the entire fleet and change direction.
         '''
-
-        print('changing direction')
         for alien in self.aliens.sprites():
             alien.rect.y += self.settings.fleet_drop_speed
             
