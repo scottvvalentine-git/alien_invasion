@@ -27,6 +27,9 @@ class AlienInvasion:
         
         pygame.display.set_caption('Alien Invasion')
 
+        self._music_player()
+        self._load_sounds()
+
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
         self.ship = Ship(self)
@@ -39,6 +42,21 @@ class AlienInvasion:
 
         #Make the Play button.
         self.play_button = Button(self,"Play")
+
+    def _load_sounds(self):
+        '''
+            loads and assigns sounds for game.
+        '''
+        self.explosion_sound = pygame.mixer.Sound('audio/ship_laser.wav')
+
+
+    def _music_player(self):
+        '''
+            Handles music for the game
+        '''
+        pygame.mixer.music.load('audio/The Invaders.ogg')
+        pygame.mixer.music.set_volume(self.settings.music_volume)
+        pygame.mixer.music.play(loops=-1,fade_ms=self.settings.music_fading)
 
     def run_game(self):
         '''
@@ -105,6 +123,9 @@ class AlienInvasion:
         '''
             Respond to the ship being hit by an alien.
         '''
+        
+        self.explosion_sound.play()
+
         if self.stats.ships_left > 0:
             #Decrement ships_left, and update scoreboard.
             self.stats.ships_left -= 1
@@ -151,19 +172,48 @@ class AlienInvasion:
         #Spacing between aliens is one alien width
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
-
+        
+        #create offsets for making O shape
+        x_offset = [8,4,2]
 
         current_x = alien_width
-        current_y = alien_height 
+        current_y = alien_height + 40 
 
-        while current_y < (self.settings.screen_height - 5 * alien_height):
-            while current_x < (self.settings.screen_width - 2 * alien_width):
-                self._create_alien(current_x, current_y)
+        x_counter = 0
+        y_counter = 0
+        x_max = int(((self.settings.screen_width - 3) / (alien_width)) / 2) - 20
+        y_max = int(((self.settings.screen_height - 8 ) / (alien_height)) / 2) - 4
+
+        y_checks_top = [0]
+        y_checks_top.append(y_max)
+        y_checks_corner = [y_max -1]
+        y_checks_corner.append(1)
+
+        while y_counter <= y_max:
+            
+            while x_counter <= x_max:
+                
+                if y_counter in y_checks_top:
+                    offset = x_offset[0]
+                elif y_counter in y_checks_corner:
+                    offset = x_offset[1]
+                else:
+                    offset = x_offset[2]
+                   
+                if x_counter >= offset and x_counter <= (x_max - offset):
+                    self._create_alien(current_x,current_y) 
+                
                 current_x += 2 * alien_width
+                x_counter += 1
 
-            #finished a row; reset x value, and incrment y value.
+            #reset x info
+            x_counter = 0
             current_x = alien_width
+
+            #set y axis info
+            y_counter += 1
             current_y += 2 * alien_height
+
 
     def _create_alien(self,x_position,y_position):
         '''
@@ -251,6 +301,7 @@ class AlienInvasion:
                         self.bullets, self.aliens, True, True)
         
         if collisions:
+            self.explosion_sound.play()
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()

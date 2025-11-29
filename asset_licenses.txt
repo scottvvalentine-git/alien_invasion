@@ -1,2 +1,6 @@
 images/ship.bmp -- https://github.com/ehmatthes/pcc_3e/blob/main/chapter_12/shooting_bullets/images/ship.bmp
 images/alien.bmp -- https://github.com/ehmatthes/pcc_3e/blob/main/chapter_13/building_alien_fleet/images/alien.bmp
+images/sv_alien.jpg -- self
+images/sv_ship.jpg --self
+audio/The Invaders.ogg --self
+audio/ship_lasers.wave --self

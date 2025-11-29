@@ -32,6 +32,10 @@ class Settings:
         #how quickly the alien values increase
         self.score_scale = 1.5
 
+        #audio
+        self.music_fading = 1000
+        self.music_volume = .45
+
         self.initialize_dynamic_settings()
 
 
@@ -60,3 +64,4 @@ class Settings:
         self.alien_speed *= self.speedup_scale
 
         self.alien_points = int(self.alien_points * self.score_scale)
+
